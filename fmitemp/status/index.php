@@ -8,14 +8,11 @@ class FmiStation extends WeatherStation {
 
         // Finnish Meteorological Institute's open data
         // https://en.ilmatieteenlaitos.fi/open-data
-        $this->appid    = "---";
-        $this->location = "---";
+        $this->location = "rovaniemi";
     }
 
     private function getUrl() {
-        $url = 'http://data.fmi.fi/fmi-apikey/';
-        $url .= $this->appid;
-        $url .= '/wfs?request=getFeature&storedquery_id=fmi::observations::weather::simple&place=';
+        $url = 'http://opendata.fmi.fi/wfs?request=getFeature&storedquery_id=fmi::observations::weather::simple&place=';
         $url .= $this->location;
         return $url;
     }
@@ -25,13 +22,9 @@ class FmiStation extends WeatherStation {
         $w = new SimpleXMLElement($data);
 
         foreach($w->xpath('//BsWfs:BsWfsElement') as $item) {
-            //echo "<p>";
-            //echo $item->xpath('BsWfs:Time')[0];
-            //echo "<br>";
             $name = $item->xpath('BsWfs:ParameterName')[0];
-            //echo "<br>";
             $value = $item->xpath('BsWfs:ParameterValue')[0];
-            //echo "<p>";
+
             if (strpos($name, 't2m') !== false) {
                 $this->response->status->temp = (string)$value;
             } else if  (strpos($name, 'rh') !== false) {
